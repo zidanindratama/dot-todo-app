@@ -12,6 +12,7 @@ import { LiaSortAlphaDownSolid } from "react-icons/lia";
 import { Activity, Item } from "@/types/type";
 import { HiOutlinePencil } from "react-icons/hi2";
 import { PlusOutlined } from "@ant-design/icons";
+import axiosInstance from "@/helpers/axiosInstance.";
 
 type Props = {
   activityId: string;
@@ -42,9 +43,7 @@ const Hero = ({ activityId }: Props) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/activities/${activityId}`
-      );
+      const response = await axiosInstance.get(`/activities/${activityId}`);
       const activity = response.data.activity;
       setActivity(activity);
     } catch (err) {
@@ -57,8 +56,8 @@ const Hero = ({ activityId }: Props) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/items/${activityId}?sort=${sortType}`
+      const response = await axiosInstance.get(
+        `/items/${activityId}?sort=${sortType}`
       );
       setItems(response.data.items || []);
     } catch (err) {
@@ -78,7 +77,7 @@ const Hero = ({ activityId }: Props) => {
 
   const handleAddItem = async (values: any) => {
     try {
-      await axios.post("http://localhost:3000/api/items", {
+      await axiosInstance.post("/items", {
         activityId,
         name: values.name,
         priority: values.priority,
@@ -94,10 +93,7 @@ const Hero = ({ activityId }: Props) => {
 
   const handleUpdateItem = async (id: string, updatedData: Partial<Item>) => {
     try {
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/items/${id}`,
-        updatedData
-      );
+      await axiosInstance.put(`/items/${id}`, updatedData);
       message.success("Item berhasil diubah.");
       fetchItems();
     } catch (err) {
@@ -108,7 +104,7 @@ const Hero = ({ activityId }: Props) => {
 
   const handleUpdateCheck = async (item: Item) => {
     try {
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/items/${item.id}`, {
+      await axiosInstance.put(`/items/${item.id}`, {
         isCompleted: !item.isCompleted,
       });
       message.success("Item berhasil diubah");
@@ -120,12 +116,9 @@ const Hero = ({ activityId }: Props) => {
 
   const handleUpdateActivity = async () => {
     try {
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/items/${activityId}`,
-        {
-          title: newTitle,
-        }
-      );
+      await axiosInstance.put(`/items/${activityId}`, {
+        title: newTitle,
+      });
       message.success("Activity berhasil diubah.");
       fetchActivity();
       setIsUpdateModalOpen(false);
@@ -137,7 +130,7 @@ const Hero = ({ activityId }: Props) => {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/items/${id}`);
+      await axiosInstance.delete(`/items/${id}`);
       message.success("Item berhasil dihapus");
       setItems((prev) => prev.filter((items) => items.id !== id));
     } catch (error) {

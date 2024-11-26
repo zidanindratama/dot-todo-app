@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import ListActivity from "./ListActivity";
 import axios from "axios";
 import { Activity } from "@/types/type";
+import axiosInstance from "@/helpers/axiosInstance.";
 
 const Hero = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -17,9 +18,7 @@ const Hero = () => {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/activities`
-      );
+      const { data } = await axiosInstance.get(`/activities`);
       setActivities(data.activities);
     } catch (error) {
       message.error("Activity gagal difetch");
@@ -34,10 +33,9 @@ const Hero = () => {
       return;
     }
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/activities`,
-        { title: newActivity }
-      );
+      const response = await axiosInstance.post(`/activities`, {
+        title: newActivity,
+      });
       message.success("Activity berhasil ditambahkan");
       setActivities((prev) => [...prev, response.data.activity]);
       setModalVisible(false);
@@ -49,7 +47,7 @@ const Hero = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/activities/${id}`);
+      await axiosInstance.delete(`/activities/${id}`);
       message.success("Activity berhasil dihapus");
       setActivities((prev) => prev.filter((activity) => activity.id !== id));
     } catch (error) {
